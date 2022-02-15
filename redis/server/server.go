@@ -6,6 +6,11 @@ package server
 
 import (
 	"context"
+	"io"
+	"net"
+	"strings"
+	"sync"
+
 	"github.com/hdt3213/godis/cluster"
 	"github.com/hdt3213/godis/config"
 	database2 "github.com/hdt3213/godis/database"
@@ -15,10 +20,6 @@ import (
 	"github.com/hdt3213/godis/redis/connection"
 	"github.com/hdt3213/godis/redis/parser"
 	"github.com/hdt3213/godis/redis/reply"
-	"io"
-	"net"
-	"strings"
-	"sync"
 )
 
 var (
@@ -32,8 +33,8 @@ type Handler struct {
 	closing    atomic.Boolean // refusing new client and new request
 }
 
-// MakeHandler creates a Handler instance
-func MakeHandler() *Handler {
+// NewHandler creates a Handler instance
+func NewHandler() *Handler {
 	var db database.DB
 	if config.Properties.Self != "" &&
 		len(config.Properties.Peers) > 0 {

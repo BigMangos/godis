@@ -1,53 +1,52 @@
-package tcp
-
-/**
- * A echo server to test whether the server is functioning normally
- */
+// Package echo for test
+// A echo server to test whether the server is functioning normally
+package echo
 
 import (
 	"bufio"
 	"context"
-	"github.com/hdt3213/godis/lib/logger"
-	"github.com/hdt3213/godis/lib/sync/atomic"
-	"github.com/hdt3213/godis/lib/sync/wait"
 	"io"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/hdt3213/godis/lib/logger"
+	"github.com/hdt3213/godis/lib/sync/atomic"
+	"github.com/hdt3213/godis/lib/sync/wait"
 )
 
-// EchoHandler echos received line to client, using for test
-type EchoHandler struct {
+// Handler echos received line to client, using for test
+type Handler struct {
 	activeConn sync.Map
 	closing    atomic.Boolean
 }
 
-// MakeEchoHandler creates EchoHandler
-func MakeEchoHandler() *EchoHandler {
-	return &EchoHandler{}
+// NewEchoHandler creates Handler
+func NewEchoHandler() *Handler {
+	return &Handler{}
 }
 
-// EchoClient is client for EchoHandler, using for test
-type EchoClient struct {
+// Client is client for Handler, using for test
+type Client struct {
 	Conn    net.Conn
 	Waiting wait.Wait
 }
 
-// Close close connection
-func (c *EchoClient) Close() error {
+// Close connection
+func (c *Client) Close() error {
 	c.Waiting.WaitWithTimeout(10 * time.Second)
 	c.Conn.Close()
 	return nil
 }
 
 // Handle echos received line to client
-func (h *EchoHandler) Handle(ctx context.Context, conn net.Conn) {
+func (h *Handler) Handle(ctx context.Context, conn net.Conn) {
 	if h.closing.Get() {
 		// closing handler refuse new connection
 		_ = conn.Close()
 	}
 
-	client := &EchoClient{
+	client := &Client{
 		Conn: conn,
 	}
 	h.activeConn.Store(client, struct{}{})
@@ -75,11 +74,11 @@ func (h *EchoHandler) Handle(ctx context.Context, conn net.Conn) {
 }
 
 // Close stops echo handler
-func (h *EchoHandler) Close() error {
+func (h *Handler) Close() error {
 	logger.Info("handler shutting down...")
 	h.closing.Set(true)
 	h.activeConn.Range(func(key interface{}, val interface{}) bool {
-		client := key.(*EchoClient)
+		client := key.(*Client)
 		_ = client.Close()
 		return true
 	})

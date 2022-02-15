@@ -6,23 +6,15 @@ package tcp
 
 import (
 	"context"
-	"fmt"
-	"github.com/hdt3213/godis/interface/tcp"
-	"github.com/hdt3213/godis/lib/logger"
 	"net"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
-)
 
-// Config stores tcp server properties
-type Config struct {
-	Address    string        `yaml:"address"`
-	MaxConnect uint32        `yaml:"max-connect"`
-	Timeout    time.Duration `yaml:"timeout"`
-}
+	"github.com/hdt3213/godis/interface/tcp"
+	"github.com/hdt3213/godis/lib/logger"
+)
 
 // ListenAndServeWithSignal binds port and handle requests, blocking until receive stop signal
 func ListenAndServeWithSignal(cfg *Config, handler tcp.Handler) error {
@@ -41,7 +33,7 @@ func ListenAndServeWithSignal(cfg *Config, handler tcp.Handler) error {
 		return err
 	}
 	//cfg.Address = listener.Addr().String()
-	logger.Info(fmt.Sprintf("bind: %s, start listening...", cfg.Address))
+	logger.Info("start listen %s", cfg.Address)
 	ListenAndServe(listener, handler, closeChan)
 	return nil
 }
@@ -67,6 +59,7 @@ func ListenAndServe(listener net.Listener, handler tcp.Handler, closeChan <-chan
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
+			logger.Error("accept err: %v", err)
 			break
 		}
 		// handle

@@ -1,4 +1,4 @@
-package tcp
+package echo
 
 import (
 	"bufio"
@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/hdt3213/godis/tcp"
 )
 
 func TestListenAndServe(t *testing.T) {
@@ -18,7 +20,7 @@ func TestListenAndServe(t *testing.T) {
 		return
 	}
 	addr := listener.Addr().String()
-	go ListenAndServe(listener, MakeEchoHandler(), closeChan)
+	go tcp.ListenAndServe(listener, NewEchoHandler(), closeChan)
 
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {

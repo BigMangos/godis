@@ -2,10 +2,11 @@ package server
 
 import (
 	"bufio"
-	"github.com/hdt3213/godis/tcp"
 	"net"
 	"testing"
 	"time"
+
+	"github.com/hdt3213/godis/tcp"
 )
 
 func TestListenAndServe(t *testing.T) {
@@ -17,7 +18,7 @@ func TestListenAndServe(t *testing.T) {
 		return
 	}
 	addr := listener.Addr().String()
-	go tcp.ListenAndServe(listener, MakeHandler(), closeChan)
+	go tcp.ListenAndServe(listener, NewHandler(), closeChan)
 
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
