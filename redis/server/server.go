@@ -71,7 +71,7 @@ func (h *Handler) Handle(ctx context.Context, conn net.Conn) {
 				strings.Contains(payload.Err.Error(), "use of closed network connection") {
 				// connection closed
 				h.closeClient(client)
-				logger.Info("connection closed: " + client.RemoteAddr().String())
+				logger.Info("connection closed: %v", client.RemoteAddr())
 				return
 			}
 			// protocol err
@@ -79,7 +79,7 @@ func (h *Handler) Handle(ctx context.Context, conn net.Conn) {
 			err := client.Write(errReply.ToBytes())
 			if err != nil {
 				h.closeClient(client)
-				logger.Info("connection closed: " + client.RemoteAddr().String())
+				logger.Info("connection closed: %v", client.RemoteAddr())
 				return
 			}
 			continue

@@ -1,7 +1,11 @@
 package database
 
 import (
-	"fmt"
+	"runtime/debug"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/hdt3213/godis/aof"
 	"github.com/hdt3213/godis/config"
 	"github.com/hdt3213/godis/interface/database"
@@ -10,10 +14,6 @@ import (
 	"github.com/hdt3213/godis/lib/utils"
 	"github.com/hdt3213/godis/pubsub"
 	"github.com/hdt3213/godis/redis/reply"
-	"runtime/debug"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // MultiDB is a set of multiple database set
@@ -73,7 +73,7 @@ func MakeBasicMultiDB() *MultiDB {
 func (mdb *MultiDB) Exec(c redis.Connection, cmdLine [][]byte) (result redis.Reply) {
 	defer func() {
 		if err := recover(); err != nil {
-			logger.Warn(fmt.Sprintf("error occurs: %v\n%s", err, string(debug.Stack())))
+			logger.Warn("error occurs: %v\n%s", err, string(debug.Stack()))
 			result = &reply.UnknownErrReply{}
 		}
 	}()

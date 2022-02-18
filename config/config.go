@@ -2,12 +2,13 @@ package config
 
 import (
 	"bufio"
-	"github.com/hdt3213/godis/lib/logger"
 	"io"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/hdt3213/godis/lib/logger"
 )
 
 // ServerProperties defines global config properties
@@ -55,7 +56,7 @@ func parse(src io.Reader) *ServerProperties {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		logger.Fatal(err)
+		logger.Fatal("parse scanner err: %v", err)
 	}
 
 	// parse format

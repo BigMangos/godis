@@ -5,18 +5,18 @@ import (
 	"os"
 )
 
-func checkNotExist(src string) bool {
+func isNotExist(src string) bool {
 	_, err := os.Stat(src)
 	return os.IsNotExist(err)
 }
 
-func checkPermission(src string) bool {
+func isPermissionDenied(src string) bool {
 	_, err := os.Stat(src)
 	return os.IsPermission(err)
 }
 
 func isNotExistMkDir(src string) error {
-	if notExist := checkNotExist(src); notExist == true {
+	if isNotExist(src) {
 		if err := mkDir(src); err != nil {
 			return err
 		}
@@ -34,13 +34,11 @@ func mkDir(src string) error {
 }
 
 func mustOpen(fileName, dir string) (*os.File, error) {
-	perm := checkPermission(dir)
-	if perm == true {
+	if isPermissionDenied(dir) {
 		return nil, fmt.Errorf("permission denied dir: %s", dir)
 	}
 
-	err := isNotExistMkDir(dir)
-	if err != nil {
+	if err := isNotExistMkDir(dir); err != nil {
 		return nil, fmt.Errorf("error during make dir %s, err: %s", dir, err)
 	}
 

@@ -3,7 +3,10 @@ package cluster
 
 import (
 	"context"
-	"fmt"
+	"runtime/debug"
+	"strconv"
+	"strings"
+
 	"github.com/hdt3213/godis/config"
 	database2 "github.com/hdt3213/godis/database"
 	"github.com/hdt3213/godis/datastruct/dict"
@@ -13,10 +16,7 @@ import (
 	"github.com/hdt3213/godis/lib/idgenerator"
 	"github.com/hdt3213/godis/lib/logger"
 	"github.com/hdt3213/godis/redis/reply"
-	"github.com/jolestar/go-commons-pool/v2"
-	"runtime/debug"
-	"strconv"
-	"strings"
+	pool "github.com/jolestar/go-commons-pool/v2"
 )
 
 // Cluster represents a node of godis cluster
@@ -96,7 +96,7 @@ func isAuthenticated(c redis.Connection) bool {
 func (cluster *Cluster) Exec(c redis.Connection, cmdLine [][]byte) (result redis.Reply) {
 	defer func() {
 		if err := recover(); err != nil {
-			logger.Warn(fmt.Sprintf("error occurs: %v\n%s", err, string(debug.Stack())))
+			logger.Warn("error occurs: %v\n%s", err, string(debug.Stack()))
 			result = &reply.UnknownErrReply{}
 		}
 	}()

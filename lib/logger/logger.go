@@ -20,7 +20,7 @@ type Settings struct {
 }
 
 var (
-	logFile            *os.File
+	level              = ERROR
 	defaultPrefix      = ""
 	defaultCallerDepth = 2
 	logger             *log.Logger
@@ -33,7 +33,8 @@ type logLevel int
 
 // log levels
 const (
-	DEBUG logLevel = iota
+	CLOSE logLevel = iota
+	DEBUG
 	INFO
 	WARNING
 	ERROR
@@ -76,41 +77,53 @@ func setPrefix(level logLevel) {
 }
 
 // Debug prints debug log
-func Debug(v ...interface{}) {
+func Debug(format string, v ...interface{}) {
 	mu.Lock()
 	defer mu.Unlock()
+	if level > DEBUG {
+		return
+	}
 	setPrefix(DEBUG)
-	logger.Println(v...)
+	logger.Printf(format, v...)
 }
 
 // Info prints normal log
-func Info(v ...interface{}) {
+func Info(format string, v ...interface{}) {
 	mu.Lock()
 	defer mu.Unlock()
+	if level > INFO {
+		return
+	}
 	setPrefix(INFO)
-	logger.Println(v...)
+	logger.Printf(format, v)
 }
 
 // Warn prints warning log
-func Warn(v ...interface{}) {
+func Warn(format string, v ...interface{}) {
 	mu.Lock()
 	defer mu.Unlock()
+	if level > WARNING {
+		return
+	}
 	setPrefix(WARNING)
-	logger.Println(v...)
+	logger.Printf(format, v...)
 }
 
 // Error prints error log
-func Error(v ...interface{}) {
+func Error(format string, v ...interface{}) {
 	mu.Lock()
 	defer mu.Unlock()
+	if level > ERROR {
+		return
+	}
 	setPrefix(ERROR)
-	logger.Println(v...)
+	logger.Printf(format, v...)
 }
 
 // Fatal prints error log then stop the program
-func Fatal(v ...interface{}) {
+func Fatal(format string, v ...interface{}) {
 	mu.Lock()
 	defer mu.Unlock()
 	setPrefix(FATAL)
-	logger.Fatalln(v...)
+	logger.Printf(format, v...)
 }
